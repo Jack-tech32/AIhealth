@@ -10,9 +10,9 @@ st.title("🧠 HealthAI Suite — Clinical AI Dashboard")
 
 # ================= LOAD MODELS =================
 
-clf_model = joblib.load("../models/classifier_xgb.pkl")
-reg_model = joblib.load("../models/regressor_xgb.pkl")
-cnn_model = load_model("../models/pneumonia_cnn_final.h5")
+clf_model = joblib.load(r"D:\final_project\models\classifier_xgb.pkl")
+reg_model = joblib.load(r"D:\final_project\models\regressor_xgb.pkl")
+cnn_model = load_model(r"D:\final_project\models\pneumonia_cnn_final.h5")
 
 # ================= TABULAR AI =================
 
