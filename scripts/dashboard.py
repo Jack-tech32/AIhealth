@@ -8,11 +8,23 @@ from PIL import Image
 st.set_page_config(page_title="HealthAI Suite", layout="centered")
 st.title("🧠 HealthAI Suite — Clinical AI Dashboard")
 
-# ================= LOAD MODELS =================
 
-clf_model = joblib.load(r"D:\final_project\models\classifier_xgb.pkl")
-reg_model = joblib.load(r"D:\final_project\models\regressor_xgb.pkl")
-cnn_model = load_model(r"D:\final_project\models\pneumonia_cnn_final.h5")
+# ================= LOAD MODELS =================
+import os
+
+
+# Base directory of current script
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Paths to models (relative, cross-platform)
+clf_model_path = os.path.join(BASE_DIR, "../models/classifier_xgb.pkl")
+reg_model_path = os.path.join(BASE_DIR, "../models/regressor_xgb.pkl")
+cnn_model_path = os.path.join(BASE_DIR, "../models/pneumonia_cnn_final.h5")
+
+# Load models
+clf_model = joblib.load(clf_model_path)
+reg_model = joblib.load(reg_model_path)
+cnn_model = load_model(cnn_model_path)
 
 # ================= TABULAR AI =================
 
@@ -81,19 +93,29 @@ if st.button("Predict Outcome"):
     st.info(f"Estimated Length of Stay: {round(los,2)} days")
 
 # ================= CNN XRAY =================
+
 st.header("🫁 Chest X-ray Pneumonia Detection")
 
 img = st.file_uploader("Upload Chest X-ray Image", type=["jpg","jpeg","png"])
 
 if img:
+    from PIL import Image
+    import numpy as np
+
+    # Load and display uploaded image
     image = Image.open(img).convert("RGB")
     st.image(image, caption="Uploaded X-ray", use_column_width=True)
 
-    image = image.resize((64,64))
-    image = np.array(image)/255.0
-    image = image.reshape(1,64,64,3)
+    # Preprocess for CNN
+    image_resized = image.resize((64,64))
+    image_array = np.array(image_resized)/255.0
+    image_array = np.expand_dims(image_array, axis=0)  # shape (1,64,64,3)
 
-    pred = cnn_model.predict(image)[0][0]
+    # Prediction
+    pred = cnn_model.predict(image_array, verbose=0)[0][0]
+
+    # Thresholding
     label = "PNEUMONIA" if pred > 0.5 else "NORMAL"
+    confidence = round(pred*100,2) if pred > 0.5 else round((1-pred)*100,2)
 
-    st.warning(f"Prediction: {label}")
+    st.warning(f"Prediction: {label} ({confidence}%)")
