@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing import image
 
-model = tf.keras.models.load_model("../models/pneumonia_cnn_final.h5")
+model = tf.keras.models.load_model(r"D:\final_project\models\pneumonia_cnn_final.h5")
 
 IMG_SIZE = 224   # MUST MATCH TRAINING
 
